@@ -10,6 +10,8 @@ export interface PromptLensConfig {
     timeout?: number;
     /** Project identifier (optional) */
     projectId?: string;
+    /** Whether to enable metrics collection (optional) */
+    enableMetrics?: boolean;
 }
 /**
  * Prompt test configuration
@@ -100,3 +102,4 @@ export interface EvaluationCriteria {
     /** Evaluation function */
     evaluator: (responseA: any, responseB: any) => number;
 }
+export * from "./experiment";

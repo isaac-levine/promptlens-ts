@@ -40,7 +40,7 @@ export default class PromptLens {
    */
   public async testPrompt(
     prompt: PromptTemplate,
-    config: PromptTestConfig,
+    config: PromptTestConfig
   ): Promise<PromptTestResult> {
     // Implementation will make API calls to the PromptLens service
     // This is a placeholder implementation
@@ -94,7 +94,7 @@ export default class PromptLens {
   public async logPrompt(
     prompt: string | PromptTemplate,
     response: any,
-    metadata?: Record<string, any>,
+    metadata?: Record<string, any>
   ): Promise<void> {
     await this.makeRequest("POST", "/log", {
       prompt: typeof prompt === "string" ? { content: prompt } : prompt,
@@ -115,7 +115,7 @@ export default class PromptLens {
   private async makeRequest(
     method: string,
     path: string,
-    data?: any,
+    data?: any
   ): Promise<any> {
     const url = new URL(path, this.baseUrl);
 
@@ -142,7 +142,7 @@ export default class PromptLens {
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(
-        `PromptLens API error (${response.status}): ${errorText}`,
+        `PromptLens API error (${response.status}): ${errorText}`
       );
     }
 

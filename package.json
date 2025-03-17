@@ -25,7 +25,10 @@
     "engineering",
     "testing",
     "monitoring",
-    "optimization"
+    "optimization",
+    "openai",
+    "gpt",
+    "experiment"
   ],
   "author": "PromptLens <hello@promptlens.com>",
   "license": "MIT",
@@ -47,6 +50,7 @@
     "eslint": "^9.22.0",
     "eslint-config-prettier": "^10.1.1",
     "jest": "^29.7.0",
+    "openai": "^4.87.3",
     "prettier": "^3.5.3",
     "ts-jest": "^29.2.6"
   }

@@ -16,3 +16,13 @@ dist/
 # OS files
 .DS_Store
 Thumbs.db 
+
+# Environment variables
+.env
+
+# Dist folder
+dist/
+
+# Package-lock.json
+package-lock.json
+

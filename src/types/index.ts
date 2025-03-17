@@ -13,6 +13,9 @@ export interface PromptLensConfig {
 
   /** Project identifier (optional) */
   projectId?: string;
+
+  /** Whether to enable metrics collection (optional) */
+  enableMetrics?: boolean;
 }
 
 /**
@@ -130,3 +133,6 @@ export interface EvaluationCriteria {
   /** Evaluation function */
   evaluator: (responseA: any, responseB: any) => number;
 }
+
+// Export experiment-related types
+export * from "./experiment";

@@ -1,120 +1,119 @@
-# PromptLens SDK
+## Using the PromptExperiment Decorator
 
-A TypeScript SDK for working with PromptLens - the tool for testing, monitoring, and optimizing your AI prompts.
+PromptLens provides a powerful decorator for running A/B tests on your prompts. This allows you to automatically test different prompt variants without modifying your existing code.
 
-## Installation
+### Setup
 
-```bash
-npm install promptlens-sdk
+To use the experimental decorators in TypeScript, make sure your `tsconfig.json` includes:
+
+```json
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
+}
 ```
 
-## Quick Start
+### Basic Usage
+
+Here's how to use the `@PromptExperiment` decorator with OpenAI:
 
 ```typescript
-import { PromptLens } from "promptlens-sdk";
+import { PromptExperiment, MetricsCollector } from "promptlens";
+import OpenAI from "openai";
 
-// Initialize the client
-const promptLens = new PromptLens({
-  apiKey: "your-api-key",
-  projectId: "your-project-id", // Optional
+class MyOpenAIService {
+  private openai: OpenAI;
+  public metricsCollector: MetricsCollector;
+
+  constructor(apiKey: string) {
+    this.openai = new OpenAI({ apiKey });
+    this.metricsCollector = new MetricsCollector(
+      "your-promptlens-api-key",
+      "https://api.promptlens.dev"
+    );
+  }
+
+  @PromptExperiment({
+    id: "my-experiment",
+    promptVariants: [
+      "Explain like I'm 5: {{topic}}",
+      "Technical explanation: {{topic}}",
+      "Real-world examples of {{topic}}",
+    ],
+    distribution: "round-robin",
+    trackMetrics: true,
+  })
+  async createChatCompletion(params: OpenAI.Chat.ChatCompletionCreateParams) {
+    return this.openai.chat.completions.create(params);
+  }
+}
+
+// Usage
+const service = new MyOpenAIService("your-openai-api-key");
+const result = await service.createChatCompletion({
+  model: "gpt-4",
+  messages: [
+    { role: "system", content: "You are a helpful assistant." },
+    { role: "user", content: "Explain recursion" },
+  ],
 });
 
-// Test a prompt
-async function testMyPrompt() {
-  const result = await promptLens.testPrompt(
-    {
-      content: "Summarize the following text in 3 bullet points: {{text}}",
-      variables: {
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
-      },
-    },
-    {
-      name: "Summary Test",
-      description: "Tests if the AI can properly summarize text",
-      expectations: [
-        {
-          type: "contains",
-          value: "bullet",
-          description: "Response should contain bullet points",
-        },
-      ],
+console.log("Response:", result.response.choices[0].message.content);
+console.log("Experiment details:", result.experiment);
+```
+
+### Alternative: Apply Decorator Manually
+
+If you're experiencing issues with the decorator syntax, you can also apply it manually:
+
+```typescript
+// Define the method normally
+async function createChatCompletion(params) {
+  return this.openai.chat.completions.create(params);
+}
+
+// Apply the decorator to the prototype
+PromptExperiment({
+  promptVariants: ["Variant A", "Variant B"],
+})(
+  MyOpenAIService.prototype,
+  "createChatCompletion",
+  Object.getOwnPropertyDescriptor(
+    MyOpenAIService.prototype,
+    "createChatCompletion"
+  )
+);
+```
+
+### Configuration Options
+
+The `PromptExperiment` decorator accepts the following options:
+
+| Option           | Type     | Description                                                        |
+| ---------------- | -------- | ------------------------------------------------------------------ |
+| `id`             | string   | Unique identifier for the experiment (optional)                    |
+| `promptVariants` | string[] | Array of prompt variants to test                                   |
+| `distribution`   | string   | How to distribute variants: 'round-robin', 'random', or 'weighted' |
+| `weights`        | number[] | Weights for variants when using 'weighted' distribution            |
+| `trackMetrics`   | boolean  | Whether to track metrics for this experiment                       |
+
+### Experiment Results
+
+The decorated method returns an `ExperimentResult` object with:
+
+```typescript
+{
+  response: OriginalResponse,
+  experiment: {
+    id: string,
+    variantIndex: number,
+    promptVariant: string,
+    metrics: {
+      latency_ms: number,
+      // ...other metrics
     }
-  );
-
-  console.log("Test passed:", result.passed);
-  console.log("Response:", result.response);
-}
-
-// Run an A/B test
-async function runABTest() {
-  const result = await promptLens.runABTest({
-    name: "Tone Comparison",
-    description: "Compare formal vs. casual tone",
-    variantA: {
-      content: "Please provide information about {{topic}}.",
-      metadata: { tone: "formal" },
-    },
-    variantB: {
-      content: "Tell me about {{topic}} in a friendly way!",
-      metadata: { tone: "casual" },
-    },
-  });
-
-  console.log("A/B Test Results:", result);
-}
-
-// Log a prompt for monitoring
-async function logPromptUsage() {
-  await promptLens.logPrompt(
-    "What is the capital of France?",
-    "The capital of France is Paris.",
-    {
-      userId: "user-123",
-      applicationArea: "geography-quiz",
-    }
-  );
+  }
 }
 ```
-
-## Documentation
-
-### Configuration
-
-The `PromptLens` client accepts the following configuration options:
-
-| Option    | Type   | Required | Description                                                  |
-| --------- | ------ | -------- | ------------------------------------------------------------ |
-| apiKey    | string | Yes      | Your PromptLens API key                                      |
-| baseUrl   | string | No       | Custom API base URL (defaults to https://api.promptlens.dev) |
-| timeout   | number | No       | Request timeout in milliseconds (defaults to 30000)          |
-| projectId | string | No       | Project identifier for organizing your prompts               |
-
-### Core Features
-
-#### Testing Prompts
-
-Test your prompts against expectations:
-
-```typescript
-const result = await promptLens.testPrompt(promptTemplate, testConfig);
-```
-
-#### A/B Testing
-
-Compare two prompt variants:
-
-```typescript
-const result = await promptLens.runABTest(abTestConfig);
-```
-
-#### Monitoring
-
-Log prompts and responses for monitoring:
-
-```typescript
-await promptLens.logPrompt(prompt, response, metadata);
-```
-
-## License
-
-MIT
