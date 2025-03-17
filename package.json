@@ -31,12 +31,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/isaaclevine/promptlens-ts.git"
+    "url": "git+https://github.com/isaac-levine/promptlens-ts.git"
   },
   "bugs": {
-    "url": "https://github.com/isaaclevine/promptlens-ts/issues"
+    "url": "https://github.com/isaac-levine/promptlens-ts/issues"
   },
-  "homepage": "https://github.com/isaaclevine/promptlens-ts#readme",
+  "homepage": "https://github.com/isaac-levine/promptlens-ts#readme",
   "engines": {
     "node": ">=14.0.0"
   },
