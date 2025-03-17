@@ -48,7 +48,7 @@ export function getCurrentVariantIndex(experimentId: string): number {
 export function rotatePromptForUser(
   experimentId: string,
   userId: string,
-  prompts: string[]
+  prompts: string[],
 ): string {
   if (!prompts || prompts.length === 0) {
     throw new Error("No prompt variants provided for rotation");
@@ -131,7 +131,7 @@ export function selectPromptVariant(
   prompts: string[],
   distribution: "round-robin" | "random" | "weighted" = "round-robin",
   weights?: number[],
-  userId?: string
+  userId?: string,
 ): string {
   switch (distribution) {
     case "random":
