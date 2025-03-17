@@ -16,6 +16,9 @@ export interface ExperimentConfig {
 
   /** Whether to track metrics for this experiment */
   trackMetrics?: boolean;
+
+  /** The model to use for the experiment */
+  model?: string;
 }
 
 /**

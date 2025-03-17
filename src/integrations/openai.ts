@@ -17,7 +17,7 @@ export function PromptExperiment(config: ExperimentConfig) {
   return function (
     target: any,
     propertyKey: string,
-    descriptor: PropertyDescriptor,
+    descriptor: PropertyDescriptor
   ) {
     const originalMethod = descriptor.value;
 
@@ -28,12 +28,37 @@ export function PromptExperiment(config: ExperimentConfig) {
         | MetricsCollector
         | undefined;
 
+      let model = config.model || "unknown"; // Allow model from config
+
+      // Attempt to extract model from the execution context
+      try {
+        // Method 1: Look inside the function implementation
+        const fnStr = originalMethod.toString();
+        const modelMatch = fnStr.match(/model:\s*["']([^"']+)["']/);
+        if (modelMatch && modelMatch[1]) {
+          model = modelMatch[1];
+        }
+
+        // Method 2: Look for client.defaultModel property
+        if (instance.client && instance.client.defaultModel) {
+          model = instance.client.defaultModel;
+        }
+
+        // Method 3: Try to extract from args
+        const extractedModel = extractModelFromArgs(args);
+        if (extractedModel) {
+          model = extractedModel;
+        }
+      } catch (e) {
+        // Silently continue if model extraction fails
+      }
+
       // Select a prompt variant based on the configuration
       const selectedPrompt = selectPromptVariant(
         experimentId,
         config.promptVariants,
         config.distribution,
-        config.weights,
+        config.weights
       );
 
       // Get the index of the selected variant
@@ -192,7 +217,7 @@ export class EnhancedOpenAI {
     this.metricsCollector = new MetricsCollector(
       apiKey,
       metricsUrl,
-      true, // enabled by default
+      true // enabled by default
     );
   }
 
