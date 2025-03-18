@@ -39,7 +39,7 @@ export const GET = async (req: Request, res: Response) => {
     } else if (startTime && endTime) {
       metrics = await metricsService.getMetricsByTimeRange(
         new Date(startTime),
-        new Date(endTime)
+        new Date(endTime),
       );
     } else {
       res.status(400).json({ error: "Missing required parameters" });

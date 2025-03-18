@@ -46,7 +46,7 @@ export class MetricsService {
    */
   async getMetricsByTimeRange(
     startTime: Date,
-    endTime: Date
+    endTime: Date,
   ): Promise<Metric[]> {
     return prisma.metric.findMany({
       where: {
@@ -70,7 +70,7 @@ export class MetricsService {
     const totalRequests = metrics.length;
     const totalLatency = metrics.reduce(
       (sum: number, m: Metric) => sum + m.latencyMs,
-      0
+      0,
     );
     const avgLatency = totalRequests > 0 ? totalLatency / totalRequests : 0;
 
@@ -79,7 +79,7 @@ export class MetricsService {
         acc[m.model] = (acc[m.model] || 0) + 1;
         return acc;
       },
-      {}
+      {},
     );
 
     return {
