@@ -17,7 +17,7 @@ export function PromptExperiment(config: ExperimentConfig) {
   return function (
     target: any,
     propertyKey: string,
-    descriptor: PropertyDescriptor,
+    descriptor: PropertyDescriptor
   ) {
     const originalMethod = descriptor.value;
 
@@ -58,7 +58,7 @@ export function PromptExperiment(config: ExperimentConfig) {
         experimentId,
         config.promptVariants,
         config.distribution,
-        config.weights,
+        config.weights
       );
 
       // Get the index of the selected variant
@@ -212,12 +212,10 @@ export class EnhancedOpenAI {
   private openai: any;
   public metricsCollector: MetricsCollector;
 
-  constructor(openaiClient: any, apiKey: string, metricsUrl: string) {
+  constructor(openaiClient: any) {
     this.openai = openaiClient;
     this.metricsCollector = new MetricsCollector(
-      apiKey,
-      metricsUrl,
-      true, // enabled by default
+      true // enabled by default
     );
   }
 

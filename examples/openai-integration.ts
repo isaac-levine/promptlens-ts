@@ -1,6 +1,9 @@
 // Import from local paths during development
 import { PromptExperiment } from "../src/integrations/openai.js";
 import { MetricsCollector } from "../src/core/metrics.js";
+import { ExperimentResult } from "../src/types/experiment.js";
+import { ChatCompletion } from "openai/resources/chat/completions";
+import "dotenv/config";
 
 // You'll need to install OpenAI as a dev dependency
 // npm install --save-dev openai
@@ -19,17 +22,29 @@ class MyOpenAIService {
   constructor() {
     this.openai = openaiClient;
 
-    // Initialize the metrics collector
-    this.metricsCollector = new MetricsCollector(
-      process.env.PROMPTLENS_API_KEY || "test-key",
-      "https://api.promptlens.dev",
-      true
-    );
+    // Initialize the metrics collector with URL from environment variable
+    this.metricsCollector = new MetricsCollector(true);
   }
 
   // Define the method that will use the OpenAI API
-  async getExplanation(params: any) {
-    return this.openai.chat.completions.create(params);
+  // The decorator will wrap the return value in an ExperimentResult
+  async getExplanation(params: any): Promise<ExperimentResult<ChatCompletion>> {
+    const response = await this.openai.chat.completions.create(params);
+    return {
+      response,
+      experiment: {
+        id: "explanation-styles",
+        variantIndex: 0,
+        promptVariant: "",
+        metrics: {
+          experiment_id: "explanation-styles",
+          prompt_hash: "",
+          model: params.model || "unknown",
+          latency_ms: 0,
+          timestamp: Date.now(),
+        },
+      },
+    };
   }
 }
 

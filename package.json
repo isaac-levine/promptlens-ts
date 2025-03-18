@@ -53,5 +53,12 @@
     "openai": "^4.87.3",
     "prettier": "^3.5.3",
     "ts-jest": "^29.2.6"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.5.0",
+    "@types/express": "^5.0.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "prisma": "^6.5.0"
   }
 }

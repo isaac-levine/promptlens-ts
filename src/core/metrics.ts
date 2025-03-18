@@ -5,24 +5,21 @@ import crypto from "crypto";
  * Service for collecting and reporting metrics
  */
 export class MetricsCollector {
-  private apiKey: string;
-  private baseUrl: string;
   private enabled: boolean;
   private queue: MetricData[] = [];
   private batchSize: number = 10;
   private flushInterval: number = 5000; // 5 seconds
   private intervalId?: NodeJS.Timeout;
+  private baseUrl: string;
 
   /**
    * Create a new metrics collector
    *
-   * @param apiKey API key for authentication
-   * @param baseUrl Base URL for the metrics API
+   * @param baseUrl Base URL for the metrics API (defaults to PROMPTLENS_API_URL env var or http://localhost:3000)
    * @param enabled Whether metrics collection is enabled
    */
-  constructor(apiKey: string, baseUrl: string, enabled: boolean = true) {
-    this.apiKey = apiKey;
-    this.baseUrl = baseUrl;
+  constructor(enabled: boolean = true) {
+    this.baseUrl = process.env.PROMPTLENS_API_URL || "http://localhost:3000";
     this.enabled = enabled;
 
     if (this.enabled) {
@@ -112,8 +109,6 @@ export class MetricsCollector {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${this.apiKey}`,
-          "X-SDK-Version": "typescript-0.1.0",
         },
         body: JSON.stringify(batchToSend),
       });
